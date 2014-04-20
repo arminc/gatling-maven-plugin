@@ -210,11 +210,11 @@ public class GatlingMojo extends AbstractMojo {
       try {
         executeGatling(jvmArgs().toArray(new String[0]), gatlingArgs().toArray(new String[0]));
       } catch (Exception e) {
-        writeFailureFile();
         if (failOnError) {
-          throw new MojoExecutionException("Gatling failed.", e);
+            throw new MojoExecutionException("Gatling failed.", e);
         } else {
-          getLog().warn("There was some errors while running your simulation, but failOnError set to false won't fail your build.");
+            writeFailureFile();
+            getLog().warn("There was some errors while running your simulation, but failOnError set to false won't fail your build.");
         }
       }
     } else
