@@ -22,6 +22,7 @@ import io.gatling.app.CommandLineConstants;
 import io.gatling.app.GatlingStatusCodes;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -209,6 +210,7 @@ public class GatlingMojo extends AbstractMojo {
       try {
         executeGatling(jvmArgs().toArray(new String[0]), gatlingArgs().toArray(new String[0]));
       } catch (Exception e) {
+        writeFailureFile();
         if (failOnError) {
           throw new MojoExecutionException("Gatling failed.", e);
         } else {
@@ -219,7 +221,17 @@ public class GatlingMojo extends AbstractMojo {
       getLog().info("Skipping gatling-maven-plugin");
   }
 
-  private void executeGatling(String[] jvmArgs, String[] gatlingArgs) throws Exception {
+    private void writeFailureFile() throws MojoExecutionException {
+        try {
+            getLog().info("Creating an Gatling error file");
+            //noinspection ResultOfMethodCallIgnored
+            new File(resultsFolder,"gatling.failed").createNewFile();
+        } catch (IOException e) {
+            throw new MojoExecutionException("Failed to write the Gatling failure file", e);
+        }
+    }
+
+    private void executeGatling(String[] jvmArgs, String[] gatlingArgs) throws Exception {
 
     String testClasspath = buildTestClasspath();
     if (fork) {
